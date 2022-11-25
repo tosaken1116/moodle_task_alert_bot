@@ -21,6 +21,7 @@ client = discord.Client(intents=Intents)
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    alert_near_task.start()
 
 
 
@@ -61,10 +62,5 @@ async def alert_near_task():
         await channel.send(generate_message(near_tasks))
 
 
-async def fn():
-    await alert_near_task.start()
-
 if __name__=="__main__":
-    loop_ = asyncio.get_event_loop()
-    loop_.run_until_complete(fn())
     client.run(os.getenv('TOKEN'))
