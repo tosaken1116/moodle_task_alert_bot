@@ -14,19 +14,13 @@ load_dotenv()
 CHANNEL_ID=os.getenv('CHANNEL_ID')
 
 if __name__=="__main__":
-    while(1):
-        now = datetime.datetime.now()
-        if 1:
-        # if now.minute==0 or now.minute == 30:
-            Intents = discord.Intents.all()
-            Intents.members = True
-            client = discord.Client(intents=Intents)
-            break
-        time.sleep(5)
+        Intents = discord.Intents.all()
+        Intents.members = True
+        client = discord.Client(intents=Intents)
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    task_update_loop.start()
+   # task_update_loop.start()
     alert_near_task.start()
 
 
@@ -96,7 +90,7 @@ def generate_message(tasks):
             send_message+=f"```{task['date']} {task['time']}\n{task['class']}\n{task['task']}\n\n```"
     return send_message
 
-@tasks.loop(seconds=60*60)
+@tasks.loop(seconds=3600)
 async def alert_near_task():
     with open('./near_tasks.json', 'r') as f:
         near_tasks = json.load(f)
@@ -104,7 +98,7 @@ async def alert_near_task():
         channel = client.get_channel(int(CHANNEL_ID))
         await channel.send(generate_message(near_tasks))
 
-@tasks.loop(seconds=60*60)
+@tasks.loop(seconds=3600)
 async def task_update_loop():
     task_update()
 
