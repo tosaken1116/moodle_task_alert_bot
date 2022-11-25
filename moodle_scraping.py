@@ -28,7 +28,7 @@ class GetTask:
         driver.find_element(By.ID,"username").send_keys(str(os.getenv('MOODLE_ID')))
         driver.find_element(By.ID,"password").send_keys(str(os.getenv('MOODLE_PASSWORD')))
         driver.find_element(By.NAME,"_eventId_proceed").click()
-        time.sleep(5)
+        time.sleep(10)
         driver.execute_script("window.scrollTo(0, 3000);")
 
         return driver
