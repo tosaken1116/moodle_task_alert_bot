@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+from methods import get_date_format, get_task_from_date
+
 
 class GetTask:
     @classmethod
@@ -35,7 +37,6 @@ class GetTask:
 
     def scraping_task(driver):
         soup = BeautifulSoup(driver.page_source,'html.parser')
-        print(soup)
         task_table = soup.find('div',id="page-container-2").find('div',class_="border-bottom pb-2")
         GetTask.get_task_from_table(task_table)
 
@@ -60,4 +61,24 @@ class GetTask:
                 for task_value in value:
                     task_value["date"]=key
                     writer.writerow(task_value)
-GetTask.get_moodle_task()
+    @classmethod
+    def task_update(cls):
+        GetTask.get_moodle_task()
+        today = get_date_format("today")
+        todays_tasks = get_task_from_date(today)
+        near_tasks = []
+        if len(todays_tasks) !=0:
+            now = datetime.datetime.now()
+            for todays_task in todays_tasks:
+                time_limit =datetime.datetime(year = now.year,month = now.month,day = now.day,hour = int(todays_task["time"].split(':')[0]),minute = int(todays_task["time"].split(':')[1]))
+                if (time_limit-now).seconds<7200:
+                    near_tasks.append(todays_task)
+        with open('./near_tasks.json', 'w') as f:
+            json.dump(near_tasks, f, ensure_ascii=False)
+if __name__ == '__main__':
+    while True:
+        now = datetime.datetime.now()
+        print(now.minute)
+        if now.minute==00 and now.hour>6:
+            GetTask.task_update()
+        time.sleep(60)

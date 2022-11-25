@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import json
 import os
@@ -8,6 +9,7 @@ import discord
 from discord.ext import tasks
 from dotenv import load_dotenv
 
+from methods import get_date_format, get_task_from_date
 from moodle_scraping import GetTask
 
 load_dotenv()
@@ -36,45 +38,7 @@ async def on_message(message):
     except Exception as e:
         await message.channel.send(str(e))
 
-def get_task_from_date(detect_dates):
-    with open('./task.json', 'r') as f:
-        task = json.load(f)
-    return_task = []
-    for detect_key in detect_dates:
-        task_exist = task.get(detect_key)
-        if task_exist:
-            # task_exist.append
-            return_task.extend(task_exist)
-    return return_task
 
-def get_date_format(detect_date):
-    now = datetime.date.today()
-    w_list = ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日']
-    if detect_date =="today":
-        return [
-            f"{now.year}年 {now.month}月 {now.day}日({w_list[now.weekday()]})"
-            ]
-    elif detect_date =="tomorrow":
-        return  [
-            f"{now.year}年 {now.month}月 {now.day+1}日({w_list[now.weekday()+1]})"
-            ]
-    elif  re.match(".*?(\d+)", detect_date):
-        print([f"{(now+datetime.timedelta(days=i)).year}年 {(now+datetime.timedelta(days=i)).month}月 {(now+datetime.timedelta(days=i)).day}日({w_list[(now+datetime.timedelta(days=i)).weekday()]})" for i in range(int(re.sub("[^\d]","", detect_date)))])
-        return [f"{(now+datetime.timedelta(days=i)).year}年 {(now+datetime.timedelta(days=i)).month}月 {(now+datetime.timedelta(days=i)).day}日({w_list[(now+datetime.timedelta(days=i)).weekday()]})" for i in range(int(re.sub("[^\d]","", detect_date)))]
-
-def task_update():
-    GetTask.get_moodle_task()
-    today = get_date_format("today")
-    todays_tasks = get_task_from_date(today)
-    near_tasks = []
-    if len(todays_tasks) !=0:
-        now = datetime.datetime.now()
-        for todays_task in todays_tasks:
-            time_limit =datetime.datetime(year = now.year,month = now.month,day = now.day,hour = int(todays_task["time"].split(':')[0]),minute = int(todays_task["time"].split(':')[1]))
-            if (time_limit-now).seconds<7200:
-                near_tasks.append(todays_task)
-    with open('./near_tasks.json', 'w') as f:
-        json.dump(near_tasks, f, ensure_ascii=False)
 
 
 
@@ -96,11 +60,11 @@ async def alert_near_task():
         channel = client.get_channel(int(CHANNEL_ID))
         await channel.send(generate_message(near_tasks))
 
-@tasks.loop(seconds=3600)
-async def task_update_loop():
-    task_update()
-if __name__=="__main__":
 
-        task_update_loop.start()
-        alert_near_task.start()
-        client.run(os.getenv('TOKEN'))
+async def fn():
+    await alert_near_task.start()
+
+if __name__=="__main__":
+    loop_ = asyncio.get_event_loop()
+    loop_.run_until_complete(fn())
+    client.run(os.getenv('TOKEN'))
