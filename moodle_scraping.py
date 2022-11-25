@@ -50,8 +50,7 @@ class GetTask:
             for task_element in task_elements:
                 task_dict[task_date].append({"date":task_date,"time":task_element.find('small',class_="text-right text-nowrap ml-1").text.replace(' ','').replace('\n',''),"task":task_element.find('h6').text,"class":task_element.find('small').text})
             task_start_line=task_start_line.find_next_sibling('h5')
-        now = datetime.datetime.now()
-        with open(f'./task{now}.json', 'w') as f:
+        with open(f'./task.json', 'w') as f:
             json.dump(task_dict, f, ensure_ascii=False)
     def output_to_csv(output_dict):
         with open('./task.csv',"w", encoding="utf_8_sig")as f:
