@@ -13,15 +13,13 @@ from moodle_scraping import GetTask
 load_dotenv()
 CHANNEL_ID=os.getenv('CHANNEL_ID')
 
-if __name__=="__main__":
-        Intents = discord.Intents.all()
-        Intents.members = True
-        client = discord.Client(intents=Intents)
+Intents = discord.Intents.all()
+Intents.members = True
+client = discord.Client(intents=Intents)
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-   # task_update_loop.start()
-    alert_near_task.start()
+
 
 
 @client.event
@@ -101,5 +99,8 @@ async def alert_near_task():
 @tasks.loop(seconds=3600)
 async def task_update_loop():
     task_update()
+if __name__=="__main__":
 
-client.run(os.getenv('TOKEN'))
+        task_update_loop.start()
+        alert_near_task.start()
+        client.run(os.getenv('TOKEN'))
