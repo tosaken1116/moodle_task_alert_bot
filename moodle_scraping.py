@@ -1,16 +1,10 @@
 import csv
-import datetime
 import json
 import os
-import re
 import time
 
-import google.auth
-import googleapiclient.discovery
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from google.auth import load_credentials_from_file
-from googleapiclient.discovery import build
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 

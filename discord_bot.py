@@ -71,7 +71,7 @@ def get_date_format(detect_date):
         return [f"{(now+datetime.timedelta(days=i)).year}年 {(now+datetime.timedelta(days=i)).month}月 {(now+datetime.timedelta(days=i)).day}日({w_list[(now+datetime.timedelta(days=i)).weekday()]})" for i in range(int(re.sub("[^\d]","", detect_date)))]
 
 def task_update():
-    # GetTask.get_moodle_task()
+    GetTask.get_moodle_task()
     today = get_date_format("today")
     todays_tasks = get_task_from_date(today)
     near_tasks = []
