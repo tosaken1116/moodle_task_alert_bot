@@ -49,7 +49,7 @@ class GetTask:
             task_dict[task_date]=[]
             task_elements =task_start_line.find_next_sibling('div').find_all('div',recursive=False)
             for task_element in task_elements:
-                task_dict[task_date].append({"date":task_date,"time":task_element.find('small',class_="text-right text-nowrap ml-1").text.replace(' ','').replace('\n',''),"task":task_element.find('h6').text,"class":task_element.find('small').text})
+                task_dict[task_date].append({"date":task_date,"time":task_element.find('small',class_="text-right text-nowrap ml-1").text.replace(' ','').replace('\n',''),"task":task_element.find('h6').text,"class":task_element.find('small').text,"url":task_element.find('a').get('href')})
             task_start_line=task_start_line.find_next_sibling('h5')
         with open(f'./task.json', 'w') as f:
             json.dump(task_dict, f, ensure_ascii=False)

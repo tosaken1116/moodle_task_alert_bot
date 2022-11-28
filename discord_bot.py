@@ -50,16 +50,22 @@ def generate_message(tasks):
         send_message="現在表示できる課題はありません"
     else:
         for task in tasks:
-            send_message+=f"```{task['date']} {task['time']}\n{task['class']}\n{task['task']}\n\n```"
+            send_message+=f"```{task['date']} {task['time']}\n{task['class']}\n{task['task']}```{task['url']}\n\n"
     return send_message
 
-@tasks.loop(seconds=3600)
+@tasks.loop(seconds=10)
 async def alert_near_task():
-    with open('./near_tasks.json', 'r') as f:
-        near_tasks = json.load(f)
-    if len(near_tasks) != 0:
+    now = datetime.datetime.now()
+    if now.minute == 00:
+        with open('./near_tasks.json', 'r') as f:
+            near_tasks = json.load(f)
+        if len(near_tasks) != 0:
+            channel = client.get_channel(int(CHANNEL_ID))
+            await channel.send(generate_message(near_tasks))
+    if (now.hour == 6 or now.hour == 12 or now.hour == 18) and now.minute == 0:
         channel = client.get_channel(int(CHANNEL_ID))
-        await channel.send(generate_message(near_tasks))
+        await channel.send(generate_message(get_task_from_date(get_date_format("today"))))
+
 
 
 if __name__=="__main__":
