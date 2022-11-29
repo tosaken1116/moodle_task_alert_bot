@@ -14,7 +14,7 @@ from moodle_scraping import GetTask
 
 load_dotenv()
 CHANNEL_ID=os.getenv('CHANNEL_ID')
-
+MENTION_ID = os.getenv('MENTION_USER_ID')
 Intents = discord.Intents.all()
 Intents.members = True
 client = discord.Client(intents=Intents)
@@ -56,6 +56,7 @@ def generate_message(tasks):
 @tasks.loop(seconds=10)
 async def alert_near_task():
     now = datetime.datetime.now()
+    now = datetime.datetime(year=2022,month=11,day=29,hour=18,minute=0)
     if now.minute == 00:
         with open('./near_tasks.json', 'r') as f:
             near_tasks = json.load(f)
@@ -64,7 +65,7 @@ async def alert_near_task():
             await channel.send(generate_message(near_tasks))
     if (now.hour == 6 or now.hour == 12 or now.hour == 18) and now.minute == 0:
         channel = client.get_channel(int(CHANNEL_ID))
-        await channel.send(generate_message(get_task_from_date(get_date_format("today"))))
+        await channel.send(f'<@{MENTION_ID}>{generate_message(get_task_from_date(get_date_format("today")))}')
 
 
 
