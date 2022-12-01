@@ -56,7 +56,6 @@ def generate_message(tasks):
 @tasks.loop(seconds=10)
 async def alert_near_task():
     now = datetime.datetime.now()
-    now = datetime.datetime(year=2022,month=11,day=29,hour=18,minute=0)
     if now.minute == 00:
         with open('./near_tasks.json', 'r') as f:
             near_tasks = json.load(f)
