@@ -53,7 +53,7 @@ def generate_message(tasks):
             send_message+=f"```{task['date']} {task['time']}\n{task['class']}\n{task['task']}```{task['url']}\n\n"
     return send_message
 
-@tasks.loop(seconds=10)
+@tasks.loop(seconds=60)
 async def alert_near_task():
     now = datetime.datetime.now()
     if now.minute == 00:
