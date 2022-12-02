@@ -62,9 +62,14 @@ async def alert_near_task():
         if len(near_tasks) != 0:
             channel = client.get_channel(int(CHANNEL_ID))
             await channel.send(generate_message(near_tasks))
-    if (now.hour == 6 or now.hour == 12 or now.hour == 18) and now.minute == 0:
+    if now.hour == 6 and now.minute == 0:
         channel = client.get_channel(int(CHANNEL_ID))
         await channel.send(f'<@{MENTION_ID}>{generate_message(get_task_from_date(get_date_format("today")))}')
+    if (now.hour == 12 or now.hour == 18) and now.minute == 0:
+        message = generate_message(get_task_from_date(get_date_format("today")))
+        if message !="現在表示できる課題はありません":
+            await channel.send(f'<@{MENTION_ID}>{message}')
+
 
 
 
