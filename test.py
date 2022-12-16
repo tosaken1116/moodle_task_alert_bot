@@ -1,5 +1,3 @@
-import datetime
+from discord_bot import alert_user_task, generate_message, show_user_task
 
-now = datetime.datetime.now()
-now = datetime.datetime(year = 2022,month =11,day = 28,hour =6,minute=00)
-print(now.minute)
+print(alert_user_task())

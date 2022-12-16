@@ -31,7 +31,6 @@ class GetTask:
         driver.find_element(By.ID,"password").send_keys(str(os.getenv('MOODLE_PASSWORD')))
         driver.find_element(By.NAME,"_eventId_proceed").click()
         time.sleep(10)
-        driver.execute_script("window.scrollTo(0, 3000);")
 
         return driver
 
@@ -79,7 +78,6 @@ if __name__ == '__main__':
     GetTask.task_update()
     while True:
         now = datetime.datetime.now()
-        print(now.minute)
-        if now.minute==00 and now.hour>6:
+        if now.minute==50 and now.hour>6:
             GetTask.task_update()
         time.sleep(60)
