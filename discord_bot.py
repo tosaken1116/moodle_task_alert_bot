@@ -125,10 +125,14 @@ async def alert_near_task():
     if (now.hour == 6 or now.hour == 12 or now.hour == 18) and now.minute == 0:
         channel = client.get_channel(int(CHANNEL_ID))
         await channel.send(f'<@{MENTION_ID}>{generate_message(get_task_from_date(get_date_format("today")))}')
+    if (now.hour == 12 or now.hour == 18) and now.minute == 0:
+        message = generate_message(get_task_from_date(get_date_format("today")))
+        if message !="現在表示できる課題はありません":
+            await channel.send(f'<@{MENTION_ID}>{message}')
+
 
 
 
 if __name__=="__main__":
-    # delete_alert('add alert clear')
-    # generate_alert('add alert 木,金 21:00 現代制御論')
+
     client.run(os.getenv('TOKEN'))
