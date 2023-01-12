@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 
 from methods import get_date_format, get_task_from_date
 from moodle_scraping import GetTask
+SUCCESS_MESSAGE = "success!"
 
 load_dotenv()
 CHANNEL_ID=os.getenv('CHANNEL_ID')
@@ -37,9 +38,9 @@ async def on_message(message):
         if "get_tomorrow" in message.content:
             await message.channel.send(generate_message(get_task_from_date(get_date_format("tomorrow"))))
         if "add" in message.content:
-            generate_alert(message.content)
+            await message.channnel.send(generate_alert(message.content))
         if "delete" in message.content:
-            delete_alert(message.content)
+            await message.channel.send(delete_alert(message.content))
         if "show" in message.content:
             await message.channel.send(generate_alert(show_user_task()))
     except Exception as e:
@@ -72,6 +73,7 @@ def generate_alert(generate_message):
             user_alert[day][split_message[3]].append(add_task)
     with open('user_alert.json',"w")as f:
             json.dump(user_alert,f, ensure_ascii=False)
+    return SUCCESS_MESSAGE
 def delete_alert(delete_message):
     try:
         with open('user_alert.json',"r")as f:
@@ -87,6 +89,7 @@ def delete_alert(delete_message):
 
     with open('user_alert.json',"w")as f:
             json.dump(user_alert,f, ensure_ascii=False)
+    return SUCCESS_MESSAGE
 
 def show_user_task():
     with open('./user_alert.json', 'r') as f:
