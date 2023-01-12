@@ -109,7 +109,7 @@ def alert_user_task():
     else:
         return user_alert.get(w_list[now.weekday()]).get(str(now.hour)+":00")
 
-@tasks.loop(seconds=10)
+@tasks.loop(seconds=60)
 async def alert_near_task():
     now = datetime.datetime.now()
     channel = client.get_channel(int(CHANNEL_ID))
