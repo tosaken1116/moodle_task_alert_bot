@@ -41,7 +41,7 @@ async def on_message(message):
         if "delete" in message.content:
             delete_alert(message.content)
         if "show" in message.content:
-            await message.channel.send(generate_alert(show_user_task))
+            await message.channel.send(generate_alert(show_user_task()))
     except Exception as e:
         await message.channel.send(str(e))
 
