@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 
 from methods import get_date_format, get_task_from_date
 from moodle_scraping import GetTask
+
 SUCCESS_MESSAGE = "success!"
 
 load_dotenv()
@@ -116,6 +117,8 @@ def alert_user_task():
 async def alert_near_task():
     now = datetime.datetime.now()
     channel = client.get_channel(int(CHANNEL_ID))
+    if now.minute==50 and now.hour>6:
+            GetTask.task_update()
     if now.minute == 00:
         with open('./near_tasks.json', 'r') as f:
             near_tasks = json.load(f)
@@ -137,5 +140,5 @@ async def alert_near_task():
 
 
 if __name__=="__main__":
-
+    GetTask.task_update()
     client.run(os.getenv('TOKEN'))

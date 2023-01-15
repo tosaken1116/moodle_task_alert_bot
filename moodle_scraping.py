@@ -74,10 +74,3 @@ class GetTask:
                     near_tasks.append(todays_task)
         with open('./near_tasks.json', 'w') as f:
             json.dump(near_tasks, f, ensure_ascii=False)
-if __name__ == '__main__':
-    GetTask.task_update()
-    while True:
-        now = datetime.datetime.now()
-        if now.minute==50 and now.hour>6:
-            GetTask.task_update()
-        time.sleep(60)
