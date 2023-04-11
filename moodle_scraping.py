@@ -29,26 +29,27 @@ class GetTask:
         driver.get(url)
         driver.find_element(By.ID,"username").send_keys(str(os.getenv('MOODLE_ID')))
         driver.find_element(By.ID,"password").send_keys(str(os.getenv('MOODLE_PASSWORD')))
-        driver.find_element(By.NAME,"_eventId_proceed").click()
+        driver.find_element(By.ID,"loginbtn").click()
         time.sleep(10)
 
         return driver
 
     def scraping_task(driver):
         soup = BeautifulSoup(driver.page_source,'html.parser')
-        task_table = soup.find('div',id="page-container-2").find('div',class_="border-bottom pb-2")
+        task_table = soup.find('div',class_="block-timeline")
         GetTask.get_task_from_table(task_table)
 
     def get_task_from_table(task_table):
         task_dict={}
-        task_start_line = task_table.find('h5')
+        print(task_table)
+        task_start_line = task_table.find('div')
         task_date=""
         while task_start_line is not None:
-            task_date=task_start_line.text
+            task_date=task_start_line.find_next_sibling('div').find("h5",class_="h6 d-inline font-weight-bold px-2").text.replace(' ','').replace('\n','')
             task_dict[task_date]=[]
             task_elements =task_start_line.find_next_sibling('div').find_all('div',recursive=False)
             for task_element in task_elements:
-                task_dict[task_date].append({"date":task_date,"time":task_element.find('small',class_="text-right text-nowrap ml-1").text.replace(' ','').replace('\n',''),"task":task_element.find('h6').text,"class":task_element.find('small').text,"url":task_element.find('a').get('href')})
+                task_dict[task_date].append({"date":task_date,"time":task_element.find('small').text.replace(' ','').replace('\n',''),"task":task_element.find('a').get("title").replace(' ','').replace('\n',''),"class":task_element.find('small',class_="mb-0").text.replace(' ','').replace('\n',''),"url":task_element.find('a').get('href')})
             task_start_line=task_start_line.find_next_sibling('h5')
         with open(f'./task.json', 'w') as f:
             json.dump(task_dict, f, ensure_ascii=False)
@@ -74,3 +75,5 @@ class GetTask:
                     near_tasks.append(todays_task)
         with open('./near_tasks.json', 'w') as f:
             json.dump(near_tasks, f, ensure_ascii=False)
+if __name__ == '__main__':
+    GetTask.get_moodle_task()
