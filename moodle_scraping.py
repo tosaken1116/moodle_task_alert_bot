@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
 
 from methods import get_date_format, get_task_from_date
 
@@ -25,32 +26,31 @@ class GetTask:
         option = webdriver.ChromeOptions()
         option.add_argument("--headless")
         option.add_argument("--disable-dev-shm-usage")
-        driver = webdriver.Chrome(executable_path="/bin/chromedriver", options=option)
+        driver =webdriver.Chrome(ChromeDriverManager().install())
         driver.get(url)
         driver.find_element(By.ID,"username").send_keys(str(os.getenv('MOODLE_ID')))
         driver.find_element(By.ID,"password").send_keys(str(os.getenv('MOODLE_PASSWORD')))
         driver.find_element(By.ID,"loginbtn").click()
-        time.sleep(10)
+        time.sleep(5)
 
         return driver
 
     def scraping_task(driver):
         soup = BeautifulSoup(driver.page_source,'html.parser')
-        task_table = soup.find('div',class_="block-timeline")
+        task_table = soup.find_all('div',class_="pb-2")[1]
         GetTask.get_task_from_table(task_table)
 
     def get_task_from_table(task_table):
         task_dict={}
-        print(task_table)
-        task_start_line = task_table.find('div')
+        task_start_line = task_table.find('div',class_="mt-3")
         task_date=""
         while task_start_line is not None:
-            task_date=task_start_line.find_next_sibling('div').find("h5",class_="h6 d-inline font-weight-bold px-2").text.replace(' ','').replace('\n','')
+            task_date=task_start_line.find("h5").text.replace(' ','').replace('\n','')
             task_dict[task_date]=[]
             task_elements =task_start_line.find_next_sibling('div').find_all('div',recursive=False)
             for task_element in task_elements:
                 task_dict[task_date].append({"date":task_date,"time":task_element.find('small').text.replace(' ','').replace('\n',''),"task":task_element.find('a').get("title").replace(' ','').replace('\n',''),"class":task_element.find('small',class_="mb-0").text.replace(' ','').replace('\n',''),"url":task_element.find('a').get('href')})
-            task_start_line=task_start_line.find_next_sibling('h5')
+            task_start_line=task_start_line.find_next_sibling('div',class_="mt-3")
         with open(f'./task.json', 'w') as f:
             json.dump(task_dict, f, ensure_ascii=False)
     def output_to_csv(output_dict):
